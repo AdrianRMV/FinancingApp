@@ -6,6 +6,7 @@ import { useForm } from 'react-hook-form';
 export const Auth = () => {
     const { register, handleSubmit } = useForm();
     const [isLoading, setisLoading] = useState(false);
+    const [dummy, setDummy] = useState(0);
 
     const isLogged = pb.authStore.isValid;
 
@@ -24,6 +25,7 @@ export const Auth = () => {
     const handdleLogout = () => {
         // "logout" the last authenticated account
         pb.authStore.clear();
+        setDummy(Math.random());
     };
 
     if (isLogged) {
