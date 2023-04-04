@@ -7,6 +7,8 @@ export const Auth = () => {
     const { register, handleSubmit } = useForm();
     const [isLoading, setisLoading] = useState(false);
 
+    const isLogged = pb.authStore.isValid;
+
     const login = async ({ email, password }) => {
         setisLoading(true);
         try {
@@ -18,6 +20,28 @@ export const Auth = () => {
         }
         setisLoading(false);
     };
+
+    const handdleLogout = () => {
+        // "logout" the last authenticated account
+        pb.authStore.clear();
+    };
+
+    if (isLogged) {
+        return (
+            <>
+                <h1 className="text-5xl font-bold text-login">
+                    Logged In: {pb.authStore.model.email}
+                </h1>
+                <button
+                    className="btn btn-primary"
+                    onClick={() => handdleLogout()}
+                    disabled={!isLogged}
+                >
+                    Cerrar Sesion
+                </button>
+            </>
+        );
+    }
 
     return (
         <>
