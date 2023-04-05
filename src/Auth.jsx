@@ -1,31 +1,26 @@
-import { useState } from 'react';
 import pb from './lib/pocketbase';
 
 import { useForm } from 'react-hook-form';
+import { useLogout } from './hooks/useLogout';
+import { useLogin } from './hooks/useLogin';
 
 export const Auth = () => {
-    const { register, handleSubmit } = useForm();
-    const [isLoading, setisLoading] = useState(false);
-    const [dummy, setDummy] = useState(0);
+    // Custom hook que retorna una funcion que automaticamente cierra la sesion y cambia el estado de una variable solo para
+    // renderizar de nuevo el componente (posiblemente un useEffect seria mejor)
+    const handdleLogout = useLogout();
 
+    const { register, handleSubmit, reset } = useForm();
+
+    // mutate: es el resutlado de usar useMutation, y para
+    const { mutate: login, isLoading, isError } = useLogin();
+
+    // Variable mutable que servira solo para que detecte que el usuario se deslogueo y pueda redenizar de nuevo la page
     const isLogged = pb.authStore.isValid;
 
-    const login = async ({ email, password }) => {
-        setisLoading(true);
-        try {
-            const userData = await pb
-                .collection('users')
-                .authWithPassword(email, password);
-        } catch (error) {
-            alert(error);
-        }
-        setisLoading(false);
-    };
-
-    const handdleLogout = () => {
-        // "logout" the last authenticated account
-        pb.authStore.clear();
-        setDummy(Math.random());
+    console.log(isLoading);
+    const onSubmit = async (data) => {
+        login(data);
+        reset(); // Vacia los campos del furmulario, es una funcion del hook useForm.
     };
 
     if (isLogged) {
@@ -35,7 +30,7 @@ export const Auth = () => {
                     Logged In: {pb.authStore.model.email}
                 </h1>
                 <button
-                    className="btn btn-primary"
+                    className="btn btn-primary mt-3"
                     onClick={() => handdleLogout()}
                     disabled={!isLogged}
                 >
@@ -48,15 +43,20 @@ export const Auth = () => {
     return (
         <>
             {isLoading && <p>Loading...</p>}
+            {isError && (
+                <p style={{ color: 'red' }}>
+                    Email or Password are not working
+                </p>
+            )}
             <div className="hero min-h-screen bg-base-200">
-                <div className="hero-content flex-col lg:flex-row-reverse">
+                <div className="hero-content flex-col">
                     <div className="text-center lg:text-left">
-                        <h1 className="text-5xl font-bold text-login">
+                        <h1 className="text-5xl font-bold text-login text-center">
                             Login now!
                         </h1>
-                        <p className="py-6">Some Random Shit</p>
+                        <p className="py-3 text-center">Some Random Shit</p>
                     </div>
-                    <form onSubmit={handleSubmit(login)}>
+                    <form onSubmit={handleSubmit(onSubmit)}>
                         <div className="card flex-shrink-0 w-full max-w-sm shadow-2xl bg-base-100">
                             <div className="card-body">
                                 <div className="form-control">
