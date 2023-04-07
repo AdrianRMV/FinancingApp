@@ -1,8 +1,9 @@
-import pb from './lib/pocketbase';
+import pb from '../lib/pocketbase';
 
 import { useForm } from 'react-hook-form';
-import { useLogout } from './hooks/useLogout';
-import { useLogin } from './hooks/useLogin';
+import { useLogout } from '../hooks/useLogout';
+import { useLogin } from '../hooks/useLogin';
+import { ListContainer } from './ListContainer';
 
 export const Auth = () => {
     // Custom hook que retorna una funcion que automaticamente cierra la sesion y cambia el estado de una variable solo para
@@ -26,9 +27,10 @@ export const Auth = () => {
     if (isLogged) {
         return (
             <>
-                <h1 className="text-5xl font-bold text-login">
+                {/* <h1 className="text-5xl font-bold text-login">
                     Logged In: {pb.authStore.model.email}
-                </h1>
+                </h1> */}
+                <ListContainer />
                 <button
                     className="btn btn-primary mt-3"
                     onClick={() => handdleLogout()}
